@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <?!= include("CSS"); ?>
+</head>
+
+<body>
+  <nav  class = "blue lighten-2">
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo">Distribución del servicio de alimentación</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+      <li><img src="https://www.junaeb.cl/wp-content/themes/junaeb2020/images/logotipo_junaeb.svg" alt="Junaeb" class="responsive" /></li>
+      </ul>
+    </div>
+  </nav>
+
+    <div class="container">
+      <p> El siguiente formulario es para el primer ciclo de distribución del servicio de alimentación que corresponde al periodo entre el 01-03-2021 y el 19-03-2021, el cual se puede contestar hasta el 15-02-2021.</p>
+        <div class="row">
+            <div class="input-field col s9">
+                <input id="usuario" type="number" class="validate">
+                <label for="usuario">Usuario PAE (sin puntos y sin digito verificador)</label>
+            </div>
+                <div class="input-field col s3">
+                <button id="searchButton" class="waves-effect waves-light btn"><i class="material-icons left">search</i>Buscar</button>
+            </div>
+            <div class="input-field col s9">
+                <select class = "browser-default" id="rbd">
+                  <option disabled selected>Seleccione su RBD</option> 
+                   <!-- <?!= list; ?>-->
+                </select>
+                <!--<label>RBD</label>-->
+            </div>
+            <div class="input-field col s9">
+                <input disabled id="colegio" type="text" class="validate">
+                <label for="colegio">Colegio</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s9">
+                <input disabled id="beneficiarios" type="text" class="validate">
+                <label for="beneficiarios">Beneficiarios</label>
+            </div>
+        </div>
+                <div class="row">
+            <div class="input-field col s9">
+                <input id="region" type="hidden" class="validate">
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s9">
+                <input id="ut" type="hidden" class="validate">
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+       <table>
+        <thead>
+          <tr>
+              <th>Tipo Canasta/Nivel</th>
+              <th>Transición</th>
+              <th>Básica</th>
+              <th>Media</th>
+              <th>Adulto</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>Canasta Desayuno</td>
+            <td><input id="canastaDesayunoTransicion" type="number"  value=0 class="validate" min=0 step=1></td>
+            <td><input id="canastaDesayunoBasica" type="number" value=0 class="validate"min=0 step=1></td>
+            <td><input id="canastaDesayunoMedia" type="number" value=0 class="validate"min=0 step=1></td>
+            <td><input id="canastaDesayunoAdulto" type="number" value=0 class="validate"min=0 step=1></td>
+          </tr>
+          <tr>
+            <td>Canasta Almuerzo</td>
+            <td><input id="canastaAlmuerzoTransicion" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="canastaAlmuerzoBasica" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="canastaAlmuerzoMedia" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="canastaAlmuerzoAdulto" type="number" value=0 class="validate" min=0 step=1></td>
+          </tr>
+          <tr>
+            <td>Canasta Completa</td>
+            <td><input id="canastaCompletaTransicion" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="canastaCompletaBasica" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="canastaCompletaMedia" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="canastaCompletaAdulto" type="number" value=0 class="validate" min=0 step=1></td>
+          </tr>
+          <tr>
+            <td>Desayuno Convencional</td>
+            <td><input id="desayunoConvencionalTransicion" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="desayunoConvencionalBasica" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="desayunoConvencionalMedia" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="desayunoConvencionalAdulto" type="number" value=0 class="validate" min=0 step=1></td>
+          </tr>
+          <tr>
+            <td>Almuerzo Convencional</td>
+           <td><input id="almuerzoConvencionalTransicion" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="almuerzoConvencionalBasica" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="almuerzoConvencionalMedia" type="number" value=0 class="validate" min=0 step=1></td>
+            <td><input id="almuerzoConvencionalAdulto" type="number" value=0 class="validate" min=0 step=1></td>
+          </tr>
+          <tr>
+            <td>Once Convencional</td>
+            <td><input id="onceConvencionalTransicion" type="number" value=0 class="validate" min=0></td>
+            <td><input id="onceConvencionalBasica" type="number" value=0 class="validate" min=0></td>
+            <td><input id="onceConvencionalMedia" type="number" value=0 class="validate" min=0></td>
+            <td><input id="onceConvencionalAdulto" type="number" value=0 class="validate" min=0></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+<div class="container">
+        <div class="row">
+            <div class="input-field col s6">
+                <input disabled id="totalDesayunos" type="text" value=0 class="validate">
+                <label for="totalDesayunos">Total Desayunos</label>
+            </div>
+            <div class="input-field col s6">
+                <input disabled id="totalOnces" type="text" value=0 class="validate">
+                <label for="totalOnces">Total Onces</label>
+            </div>
+            <div class="input-field col s6">
+                <input disabled id="totalAlmuerzos" type="text" value=0 class="validate">
+                <label for="totalAlmuerzos">Total Almuerzos</label>
+            </div>
+            <div class="input-field col s6">
+                <input disabled id="totalDesayunosMasOnces" type="text" value=0 class="validate">
+                <label for="totalDesayunosMasOnces">Total Desayunos + Onces</label>
+            </div>
+        </div>
+</div>
+<div class="container">
+  <br>
+            <div class="row center">
+                <button id="mainButton" class="waves-effect waves-light btn-small blue darken-3"><i
+                        class="material-icons left">send</i>Enviar</button>
+            </div>
+</div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <?!= include("JavaScript"); ?>
+</body>
+
+</html>
