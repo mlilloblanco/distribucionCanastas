@@ -1,0 +1,371 @@
+<script>
+	//inicializador de select2 para tener buscador en el select
+	$(document).ready(function() {
+  $('#rbd').select2();
+});
+
+//nuevo evento al seleccionar el rbd para obtener colegios y benef
+$(document.body).on("change","#rbd",function(){
+ getColegioAndBeneficiarios();
+ $('#rbd').select2();
+  M.updateTextFields();
+});
+
+//nuevo evento al ingresar el rut para obtener el rbd y luego colegios y benef
+
+document.querySelector('#usuario').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        var usuario = document.getElementById("usuario").value;
+  //if (usuario.length == 7 || usuario.length == 8) {
+  google.script.run.withSuccessHandler(updateRbd).getArrayRbd(usuario);
+ // }
+
+    }
+});
+
+//que el boton buscar haga lo mismo que al dar enter en el rut
+$(document.body).on("click","#searchButton",function(){
+        var usuario = document.getElementById("usuario").value;
+  google.script.run.withSuccessHandler(updateRbd).getArrayRbd(usuario);
+});
+
+/*
+$(document.body).on("input","#usuario",function(){
+  var usuario = document.getElementById("usuario").value;
+  if (usuario.length == 7 || usuario.length == 8) {
+  google.script.run.withSuccessHandler(updateRbd).getArrayRbd(usuario);
+  getColegioAndBeneficiarios();
+  }
+});
+*/
+//disparador de eventos para cuando se apreta el boton enviar y el antiguo select comentado
+document.getElementById("mainButton").addEventListener("click",saveInfo);
+//document.getElementById("rbd").addEventListener("change",getColegioAndBeneficiarios);
+
+//disparador de eventos de sumas
+document.getElementById("canastaDesayunoTransicion").addEventListener("input",desayunosOnces);
+document.getElementById("canastaDesayunoBasica").addEventListener("input",desayunosOnces);
+document.getElementById("canastaDesayunoMedia").addEventListener("input",desayunosOnces);
+document.getElementById("canastaDesayunoAdulto").addEventListener("input",desayunosOnces);
+document.getElementById("desayunoConvencionalTransicion").addEventListener("input",desayunosOnces);
+document.getElementById("desayunoConvencionalBasica").addEventListener("input",desayunosOnces);
+document.getElementById("desayunoConvencionalMedia").addEventListener("input",desayunosOnces);
+document.getElementById("desayunoConvencionalAdulto").addEventListener("input",desayunosOnces);
+
+document.getElementById("canastaCompletaTransicion").addEventListener("input",desayunosAlmuerzos);
+document.getElementById("canastaCompletaBasica").addEventListener("input", desayunosAlmuerzos);
+document.getElementById("canastaCompletaMedia").addEventListener("input", desayunosAlmuerzos);
+document.getElementById("canastaCompletaAdulto").addEventListener("input", desayunosAlmuerzos);
+
+document.getElementById("canastaAlmuerzoTransicion").addEventListener("input",sumAlmuerzos);
+document.getElementById("canastaAlmuerzoBasica").addEventListener("input",sumAlmuerzos);
+document.getElementById("canastaAlmuerzoMedia").addEventListener("input",sumAlmuerzos);
+document.getElementById("canastaAlmuerzoAdulto").addEventListener("input",sumAlmuerzos);
+document.getElementById("almuerzoConvencionalTransicion").addEventListener("input",sumAlmuerzos);
+document.getElementById("almuerzoConvencionalBasica").addEventListener("input",sumAlmuerzos);
+document.getElementById("almuerzoConvencionalMedia").addEventListener("input",sumAlmuerzos);
+document.getElementById("almuerzoConvencionalAdulto").addEventListener("input",sumAlmuerzos);
+
+document.getElementById("onceConvencionalTransicion").addEventListener("input",oncesDesayunos);
+document.getElementById("onceConvencionalBasica").addEventListener("input",oncesDesayunos);
+document.getElementById("onceConvencionalMedia").addEventListener("input",oncesDesayunos);
+document.getElementById("onceConvencionalAdulto").addEventListener("input",oncesDesayunos);
+
+ //funcion que guarda la información del formulario en google sheets
+  function saveInfo() {
+    var cicloActual = "Ciclo 1";
+    //array vacio
+    var userInfo = {};
+        userInfo.usuario = document.getElementById("usuario").value;
+        userInfo.rbd = document.getElementById("rbd").value;
+        userInfo.colegio = document.getElementById("colegio").value;
+        userInfo.beneficiarios = document.getElementById("beneficiarios").value;
+        userInfo.canastaDesayunoTransicion = document.getElementById("canastaDesayunoTransicion").value;   
+        userInfo.canastaDesayunoBasica = document.getElementById("canastaDesayunoBasica").value;
+        userInfo.canastaDesayunoMedia = document.getElementById("canastaDesayunoMedia").value;
+        userInfo.canastaDesayunoAdulto = document.getElementById("canastaDesayunoAdulto").value;
+        userInfo.canastaAlmuerzoTransicion = document.getElementById("canastaAlmuerzoTransicion").value;   
+        userInfo.canastaAlmuerzoBasica = document.getElementById("canastaAlmuerzoBasica").value;
+        userInfo.canastaAlmuerzoMedia = document.getElementById("canastaAlmuerzoMedia").value;
+        userInfo.canastaAlmuerzoAdulto = document.getElementById("canastaAlmuerzoAdulto").value;                
+        userInfo.canastaCompletaTransicion = document.getElementById("canastaCompletaTransicion").value;   
+        userInfo.canastaCompletaBasica = document.getElementById("canastaCompletaBasica").value;
+        userInfo.canastaCompletaMedia = document.getElementById("canastaCompletaMedia").value;
+        userInfo.canastaCompletaAdulto = document.getElementById("canastaCompletaAdulto").value;
+        userInfo.desayunoConvencionalTransicion = document.getElementById("desayunoConvencionalTransicion").value;    
+        userInfo.desayunoConvencionalBasica = document.getElementById("desayunoConvencionalBasica").value;
+        userInfo.desayunoConvencionalMedia = document.getElementById("desayunoConvencionalMedia").value;
+        userInfo.desayunoConvencionalAdulto = document.getElementById("desayunoConvencionalAdulto").value;
+        userInfo.almuerzoConvencionalTransicion = document.getElementById("almuerzoConvencionalTransicion").value;   
+        userInfo.almuerzoConvencionalBasica = document.getElementById("almuerzoConvencionalBasica").value;
+        userInfo.almuerzoConvencionalMedia = document.getElementById("almuerzoConvencionalMedia").value;
+        userInfo.almuerzoConvencionalAdulto = document.getElementById("almuerzoConvencionalAdulto").value;
+        userInfo.onceConvencionalTransicion = document.getElementById("onceConvencionalTransicion").value;    
+        userInfo.onceConvencionalBasica = document.getElementById("onceConvencionalBasica").value;
+        userInfo.onceConvencionalMedia = document.getElementById("onceConvencionalMedia").value;
+        userInfo.onceConvencionalAdulto = document.getElementById("onceConvencionalAdulto").value;
+        userInfo.dateStamp = (new Date()).toString();
+        userInfo.ciclo = cicloActual;
+        userInfo.region = document.getElementById("region").value;
+        userInfo.ut = document.getElementById("ut").value;
+
+        //validaciones
+        if (getUsuario(userInfo.usuario) == false){
+              M.updateTextFields();
+        M.toast({html: 'Su Usuario PAE no ha sido encontrado'});
+        } else if (userInfo.rbd == "Seleccione su RBD") {
+          M.toast({html: 'No ha seleccionado RBD'});   
+        } else if (userInfo.usuario <1000000 || userInfo.usuario > 99999999 || isNaN(userInfo.usuario) || userInfo.usuario == "") {
+          M.toast({html: 'El usuario PAE invàlido'});
+        } 
+        else if (userInfo.canastaDesayunoTransicion <0 || isNaN(userInfo.canastaDesayunoTransicion) || userInfo.canastaDesayunoTransicion == "") {
+          M.toast({html: 'El valor de canasta Desayuno Transición es menor que cero o no es numérico'});
+        } else if (userInfo.canastaDesayunoBasica <0 || isNaN(userInfo.canastaDesayunoBasica) || userInfo.canastaDesayunoBasica == "") {
+          M.toast({html: 'El valor de canasta Desayuno Básica es menor que cero o no es numérico'});
+        } else if (userInfo.canastaDesayunoMedia <0 || isNaN(userInfo.canastaDesayunoMedia) || userInfo.canastaDesayunoMedia == "") {
+          M.toast({html: 'El valor de canasta Desayuno Media es menor que cero o no es numérico'});
+        } else if (userInfo.canastaDesayunoAdulto <0 || isNaN(userInfo.canastaDesayunoAdulto) || userInfo.canastaDesayunoAdulto == "") {
+          M.toast({html: 'El valor de canasta Desayuno Adulto es menor que cero o no es numérico'});
+        } else if (userInfo.canastaAlmuerzoTransicion <0 || isNaN(userInfo.canastaAlmuerzoTransicion) || userInfo.canastaAlmuerzoTransicion == "") {
+          M.toast({html: 'El valor de canasta Almuerzo Transición es menor que cero o no es numérico'});
+        } else if (userInfo.canastaAlmuerzoBasica <0 || isNaN(userInfo.canastaAlmuerzoBasica) || userInfo.canastaAlmuerzoBasica == "") {
+          M.toast({html: 'El valor de canasta Almuerzo Básica es menor que cero o no es numérico'});
+        } else if (userInfo.canastaAlmuerzoMedia <0 || isNaN(userInfo.canastaAlmuerzoMedia) || userInfo.canastaAlmuerzoMedia == "") {
+          M.toast({html: 'El valor de canasta Almuerzo Media es menor que cero o no es numérico'});
+        } else if (userInfo.canastaAlmuerzoAdulto <0 || isNaN(userInfo.canastaAlmuerzoAdulto) || userInfo.canastaAlmuerzoAdulto == "") {
+          M.toast({html: 'El valor de canasta Almuerzo Adulto es menor que cero o no es numérico'});
+        } else if (userInfo.canastaCompletaTransicion <0 || isNaN(userInfo.canastaCompletaTransicion) || userInfo.canastaCompletaTransicion == "") {
+          M.toast({html: 'El valor de canasta Completa Transición es menor que cero o no es numérico'});
+        } else if (userInfo.canastaCompletaBasica <0 || isNaN(userInfo.canastaCompletaBasica) || userInfo.canastaCompletaBasica == "") {
+          M.toast({html: 'El valor de canasta Completa Básica es menor que cero o no es numérico'});
+        } else if (userInfo.canastaCompletaMedia <0 || isNaN(userInfo.canastaCompletaMedia) || userInfo.canastaCompletaMedia == "") {
+          M.toast({html: 'El valor de canasta Completa Media es menor que cero o no es numérico'});
+        } else if (userInfo.canastaCompletaAdulto <0 || isNaN(userInfo.canastaCompletaAdulto) || userInfo.canastaCompletaAdulto == "") {
+          M.toast({html: 'El valor de canasta Completa Adulto es menor que cero o no es numérico'});
+        } else if (userInfo.desayunoConvencionalTransicion <0 || isNaN(userInfo.desayunoConvencionalTransicion) || userInfo.desayunoConvencionalTransicion == "") {
+          M.toast({html: 'El valor de desayuno Convencional Transición es menor que cero o no es numérico'});
+        } else if (userInfo.desayunoConvencionalBasica <0 || isNaN(userInfo.desayunoConvencionalBasica) || userInfo.desayunoConvencionalBasica == "") {
+          M.toast({html: 'El valor de desayuno Convencional Básica es menor que cero o no es numérico'});
+        } else if (userInfo.desayunoConvencionalMedia <0 || isNaN(userInfo.desayunoConvencionalMedia) || userInfo.desayunoConvencionalMedia == "") {
+          M.toast({html: 'El valor de desayuno Convencional Media es menor que cero o no es numérico'});
+        } else if (userInfo.desayunoConvencionalAdulto <0 || isNaN(userInfo.desayunoConvencionalAdulto) || userInfo.desayunoConvencionalAdulto == "") {
+          M.toast({html: 'El valor de desayuno Convencional Adulto es menor que cero o no es numérico'});
+        } else if (userInfo.almuerzoConvencionalTransicion <0 || isNaN(userInfo.almuerzoConvencionalTransicion) || userInfo.almuerzoConvencionalTransicion == "") {
+          M.toast({html: 'El valor de almuerzo Convencional Transición es menor que cero o no es numérico'});
+        } else if (userInfo.almuerzoConvencionalBasica <0 || isNaN(userInfo.almuerzoConvencionalBasica) || userInfo.almuerzoConvencionalBasica == "") {
+          M.toast({html: 'El valor de almuerzo Convencional Básica es menor que cero o no es numérico'});
+        } else if (userInfo.almuerzoConvencionalMedia <0 || isNaN(userInfo.almuerzoConvencionalMedia) || userInfo.almuerzoConvencionalMedia == "") {
+          M.toast({html: 'El valor de almuerzo Convencional Media es menor que cero o no es numérico'});
+        } else if (userInfo.almuerzoConvencionalAdulto <0 || isNaN(userInfo.almuerzoConvencionalAdulto) || userInfo.almuerzoConvencionalAdulto == "") {
+          M.toast({html: 'El valor de almuerzo Convencional Adulto es menor que cero o no es numérico'});
+        } else if (userInfo.onceConvencionalTransicion <0 || isNaN(userInfo.onceConvencionalTransicion) || userInfo.onceConvencionalTransicion == "") {
+          M.toast({html: 'El valor de once Convencional Transición es menor que cero o no es numérico'});
+        } else if (userInfo.onceConvencionalBasica <0 || isNaN(userInfo.onceConvencionalBasica) || userInfo.onceConvencionalBasica == "") {
+          M.toast({html: 'El valor de once Convencional Básica es menor que cero o no es numérico'});
+        } else if (userInfo.onceConvencionalMedia <0 || isNaN(userInfo.onceConvencionalMedia) || userInfo.onceConvencionalMedia == "") {
+          M.toast({html: 'El valor de once Convencional Media es menor que cero o no es numérico'});
+        } else if (userInfo.onceConvencionalAdulto <0 || isNaN(userInfo.onceConvencionalAdulto) || userInfo.onceConvencionalAdulto == "") {
+          M.toast({html: 'El valor de once Convencional Adulto es menor que cero o no es numérico'});
+        } else if (userInfo.beneficiarios < parseInt(document.getElementById("totalDesayunosMasOnces").value) ) {
+          M.toast({html: 'Las onces y desayunos en conjunto no pueden superar al total de raciones asignadas a su establecimiento'});
+        } else if (userInfo.beneficiarios < parseInt(document.getElementById("totalAlmuerzos").value )) {
+          M.toast({html: 'Los almuerzos no pueden superar al total de raciones asignadas a su establecimiento'});
+        } else {
+    google.script.run.userClicked(userInfo);
+    //comentario de envio de formulario exitoso
+    M.toast({html: 'El formulario ha sido registrado con exito'});
+//clean the input
+     document.getElementById("usuario").value = "";
+     document.getElementById("beneficiarios").value = "";
+     document.getElementById("colegio").value = "";
+     document.getElementById("canastaDesayunoTransicion").value = 0;  
+     document.getElementById("canastaDesayunoBasica").value = 0;
+     document.getElementById("canastaDesayunoMedia").value = 0;
+     document.getElementById("canastaDesayunoAdulto").value = 0;
+     document.getElementById("canastaAlmuerzoTransicion").value = 0;   
+     document.getElementById("canastaAlmuerzoBasica").value = 0;
+     document.getElementById("canastaAlmuerzoMedia").value = 0;
+     document.getElementById("canastaAlmuerzoAdulto").value = 0;               
+     document.getElementById("canastaCompletaTransicion").value = 0;    
+     document.getElementById("canastaCompletaBasica").value = 0;
+     document.getElementById("canastaCompletaMedia").value = 0;
+     document.getElementById("canastaCompletaAdulto").value = 0;
+     document.getElementById("desayunoConvencionalTransicion").value = 0;   
+     document.getElementById("desayunoConvencionalBasica").value = 0;
+     document.getElementById("desayunoConvencionalMedia").value = 0;
+     document.getElementById("desayunoConvencionalAdulto").value = 0;
+     document.getElementById("almuerzoConvencionalTransicion").value = 0;   
+     document.getElementById("almuerzoConvencionalBasica").value = 0;
+     document.getElementById("almuerzoConvencionalMedia").value = 0;
+     document.getElementById("almuerzoConvencionalAdulto").value = 0;
+     document.getElementById("onceConvencionalTransicion").value = 0;    
+     document.getElementById("onceConvencionalBasica").value = 0;
+     document.getElementById("onceConvencionalMedia").value = 0;
+     document.getElementById("onceConvencionalAdulto").value = 0;
+     document.getElementById("region").value = "";
+     document.getElementById("ut").value = "";
+     document.getElementById("totalDesayunos").value = "";
+     document.getElementById("totalOnces").value = "";
+     document.getElementById("totalAlmuerzos").value = "";
+     document.getElementById("totalDesayunosMasOnces").value = "";
+      M.updateTextFields();
+      //antiguo limpiador del select del form
+      /*
+      var myApp = document.getElementById("rbd");
+      myApp.selectedIndex = 0;
+      M.FormSelect.init(myApp);
+      */
+      //limpiar el select
+      $('#rbd').select2("val",$('#rbd option:nth-child(1)').val());
+      }
+  }
+
+  function getColegioAndBeneficiarios() {
+    var rbd = document.getElementById("rbd").value;
+    google.script.run.withSuccessHandler(updateColegioAndBeneficiarios).getColeAndBenef(rbd);
+  }
+
+  function updateColegioAndBeneficiarios(datos) {
+    document.getElementById("colegio").value = datos.colegio;
+    document.getElementById("beneficiarios").value = datos.beneficiarios;
+    document.getElementById("region").value = datos.region;
+    document.getElementById("ut").value = datos.ut;
+    M.toast({html: 'Colegio y Beneficiarios actualizados'});
+    M.updateTextFields();
+  }
+
+  function sumDesayunos() {
+    document.getElementById("totalDesayunos").value = "";
+    var canasta1 = isNaN(parseInt(document.getElementById("canastaDesayunoTransicion").value)) ? 0 : parseInt(document.getElementById("canastaDesayunoTransicion").value);
+    var canasta2 = isNaN(parseInt(document.getElementById("canastaDesayunoBasica").value)) ? 0 : parseInt(document.getElementById("canastaDesayunoBasica").value); 
+    var canasta3 = isNaN(parseInt(document.getElementById("canastaDesayunoMedia").value)) ? 0 : parseInt(document.getElementById("canastaDesayunoMedia").value);
+    var canasta4 = isNaN(parseInt(document.getElementById("canastaDesayunoAdulto").value)) ? 0 : parseInt(document.getElementById("canastaDesayunoAdulto").value);
+    var canasta5 = isNaN(parseInt(document.getElementById("canastaCompletaTransicion").value)) ? 0 : parseInt(document.getElementById("canastaCompletaTransicion").value);
+    var canasta6 = isNaN(parseInt(document.getElementById("canastaCompletaBasica").value)) ? 0 : parseInt(document.getElementById("canastaCompletaBasica").value);
+    var canasta7 = isNaN(parseInt(document.getElementById("canastaCompletaMedia").value)) ? 0 : parseInt(document.getElementById("canastaCompletaMedia").value);
+    var canasta8 = isNaN(parseInt(document.getElementById("canastaCompletaAdulto").value)) ? 0 : parseInt(document.getElementById("canastaCompletaAdulto").value);
+    var canasta9 = isNaN(parseInt(document.getElementById("desayunoConvencionalTransicion").value)) ? 0 : parseInt(document.getElementById("desayunoConvencionalTransicion").value);
+    var canasta10 = isNaN(parseInt(document.getElementById("desayunoConvencionalBasica").value)) ? 0 : parseInt(document.getElementById("desayunoConvencionalBasica").value);
+    var canasta11 = isNaN(parseInt(document.getElementById("desayunoConvencionalMedia").value)) ? 0 : parseInt(document.getElementById("desayunoConvencionalMedia").value);
+    var canasta12 = isNaN(parseInt(document.getElementById("desayunoConvencionalAdulto").value)) ? 0 : parseInt(document.getElementById("desayunoConvencionalAdulto").value);
+
+    var sumDesayunos = canasta1 + canasta2 + canasta3 + canasta4 + canasta5 + canasta6 + canasta7 + canasta8 + canasta9 + canasta10 + canasta11 + canasta12;
+
+    document.getElementById("totalDesayunos").value = sumDesayunos;
+    M.updateTextFields();
+
+  }
+
+    function sumOnces() {
+    document.getElementById("totalOnces").value = "";
+    var canasta1 = isNaN(parseInt(document.getElementById("onceConvencionalTransicion").value)) ? 0 : parseInt(document.getElementById("onceConvencionalTransicion").value);
+    var canasta2 = isNaN(parseInt(document.getElementById("onceConvencionalBasica").value)) ? 0 : parseInt(document.getElementById("onceConvencionalBasica").value);
+    var canasta3 = isNaN(parseInt(document.getElementById("onceConvencionalMedia").value)) ? 0 : parseInt(document.getElementById("onceConvencionalMedia").value);
+    var canasta4 = isNaN(parseInt(document.getElementById("onceConvencionalAdulto").value)) ? 0 : parseInt(document.getElementById("onceConvencionalAdulto").value);
+    var sumOnces = canasta1 + canasta2 + canasta3 + canasta4;
+
+    document.getElementById("totalOnces").value = sumOnces;
+    M.updateTextFields();
+  }
+
+      function sumAlmuerzos() {
+    document.getElementById("totalAlmuerzos").value = "";
+
+    var canasta1 = isNaN(parseInt(document.getElementById("canastaAlmuerzoTransicion").value)) ? 0 : parseInt(document.getElementById("canastaAlmuerzoTransicion").value);
+    var canasta2 = isNaN(parseInt(document.getElementById("canastaAlmuerzoBasica").value)) ? 0 : parseInt(document.getElementById("canastaAlmuerzoBasica").value);
+    var canasta3 = isNaN(parseInt(document.getElementById("canastaAlmuerzoMedia").value)) ? 0 : parseInt(document.getElementById("canastaAlmuerzoMedia").value);
+    var canasta4 = isNaN(parseInt(document.getElementById("canastaAlmuerzoAdulto").value)) ? 0 : parseInt(document.getElementById("canastaAlmuerzoAdulto").value);
+    var canasta5 = isNaN(parseInt(document.getElementById("almuerzoConvencionalTransicion").value)) ? 0 : parseInt(document.getElementById("almuerzoConvencionalTransicion").value);
+    var canasta6 = isNaN(parseInt(document.getElementById("almuerzoConvencionalBasica").value)) ? 0 : parseInt(document.getElementById("almuerzoConvencionalBasica").value);
+    var canasta7 = isNaN(parseInt(document.getElementById("almuerzoConvencionalMedia").value)) ? 0 : parseInt(document.getElementById("almuerzoConvencionalMedia").value);
+    var canasta8 = isNaN(parseInt(document.getElementById("almuerzoConvencionalAdulto").value)) ? 0 : parseInt(document.getElementById("almuerzoConvencionalAdulto").value);
+    var canasta9 = isNaN(parseInt(document.getElementById("canastaCompletaTransicion").value)) ? 0 : parseInt(document.getElementById("canastaCompletaTransicion").value);
+    var canasta10 = isNaN(parseInt(document.getElementById("canastaCompletaBasica").value)) ? 0 : parseInt(document.getElementById("canastaCompletaBasica").value);
+    var canasta11 = isNaN(parseInt(document.getElementById("canastaCompletaMedia").value)) ? 0 : parseInt(document.getElementById("canastaCompletaMedia").value);
+    var canasta12 = isNaN(parseInt(document.getElementById("canastaCompletaAdulto").value)) ? 0 : parseInt(document.getElementById("canastaCompletaAdulto").value);
+
+    
+
+
+    var sumAlmuerzos = canasta1 + canasta2 + canasta3 + canasta4 + canasta5 + canasta6 + canasta7 + canasta8
+    + canasta9 + canasta10 + canasta11 + canasta12;
+
+    document.getElementById("totalAlmuerzos").value = sumAlmuerzos;
+    M.updateTextFields();
+
+  }
+
+function desayunosAlmuerzos() {
+  sumAlmuerzos();
+  sumDesayunos();
+  sumDesayunosOnces();
+}
+
+function desayunosOnces() {
+    sumDesayunos();
+  sumDesayunosOnces();
+
+}
+
+function oncesDesayunos() {
+  sumOnces();
+  sumDesayunosOnces();
+}
+
+      function sumDesayunosOnces() {
+    document.getElementById("totalDesayunosMasOnces").value = "";
+    var sumDesayunosOnces = parseInt(document.getElementById("totalOnces").value) + parseInt(document.getElementById("totalDesayunos").value);
+
+    document.getElementById("totalDesayunosMasOnces").value = sumDesayunosOnces;
+    M.updateTextFields();
+  }
+
+/*
+//initialization of dropdown list (old)
+  document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('select');
+    var instances = M.FormSelect.init(elems);
+  });
+  */
+
+  function getUsuario() {
+    var usuario = document.getElementById("usuario").value;
+    if (usuario.length == 7 || usuario.length == 8) {
+        google.script.run.withSuccessHandler(existeUsuario).getUser(usuario);
+    } 
+  }
+
+  function existeUsuario(datos) {
+    //document.getElementById("rbd").value = datos.colegio;
+    if (datos == 'no existe') {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+    function updateRbd(datos) {
+
+      if (datos.listaRbd === 'el rut ingresado no se encuentra en la base de datos de usuarios PAE' ) {
+        M.toast({html: 'el rut ingresado no se encuentra en la base de datos de usuarios PAE'})
+        } else {
+  
+      //se borran los option
+     $('#rbd').empty();//.trigger("change")
+     //se llenan los option con los rbd correspondientes
+     var newOption = new Option(datos.listaRbd[0],datos.listaRbd[0], true, false);
+     $('#rbd').append(newOption).trigger('change');
+    for (i=1; i<datos.listaRbd.length; i++) {
+    var newOption = new Option(datos.listaRbd[i],datos.listaRbd[i], false, false);
+    $('#rbd').append(newOption).trigger('change');
+    }
+
+    //getColegioAndBeneficiarios();
+    //$('#rbd').select2();
+        //actualización de campos y alert avisando
+    M.toast({html: 'RBD actualizados'});
+    M.updateTextFields();
+}
+
+}
+</script>
